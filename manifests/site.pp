@@ -42,7 +42,7 @@ node 'bcarnahan.puppetlabs.vm' {
   
   include users
   include skeleton
-  
+  include memcached
   
   host { 'testing.puppetlabs.vm':
       ensure => present,
