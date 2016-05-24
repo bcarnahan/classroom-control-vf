@@ -40,10 +40,8 @@ ini_setting { 'random ordering':
 
 file { '/etc/motd':
   ensure  => file,
-  owner   => 'bcarnahan'
-  group   => 'bcarnahan'
-  mode    => '0644'
-  content => 'Good morning Benton!',
+  owner   => 'trout',
+  content => 'I learned that Puppet really is fun!',
 }
 
 node default {
