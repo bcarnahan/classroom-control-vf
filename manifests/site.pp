@@ -38,26 +38,20 @@ ini_setting { 'random ordering':
 # will be included in every node's catalog, *in addition* to any classes
 # specified in the console for that node.
 node 'bcarnahan.puppetlabs.vm' {
-  
   notify { "This is ${::fqdn}. I am bcarnahan_production environment." :}
-    
-  # file { '/etc/motd':
-  #    ensure  => file,
-  #    owner   => 'trout',
-  #    content => 'I learned that Puppet really is fun!',
-  # }
   
-    exec { "cowsay 'Welcome to ${::fqdn}.' > /etc/motd" :
-      path => '/usr/bin:/usr/local/bin',
-      creates => '/etc/motd',
-    }
-
-include users
-
-    host { 'testing.puppetlabs.vm':
+  include users    
+  
+  
+  host { 'testing.puppetlabs.vm':
       ensure => present,
       ip     => '127.0.0.1',
-    }
+  }
+  
+  exec { "cowsay 'Welcome to ${::fqdn}.' > /etc/motd" :
+    path => '/usr/bin:/usr/local/bin',
+    creates => '/etc/motd',
+  }
  }
 
 node default {
