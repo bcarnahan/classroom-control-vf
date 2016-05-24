@@ -39,10 +39,10 @@ ini_setting { 'random ordering':
 # specified in the console for that node.
 
 file { '/etc/motd':
-  ensure => file,
-  owner => bcarnahan
-  group => bcarnahan
-  mode => '0644'
+  ensure  => file,
+  owner   => 'bcarnahan'
+  group   => 'bcarnahan'
+  mode    => '0644'
   content => 'Good morning Benton!',
 }
 
