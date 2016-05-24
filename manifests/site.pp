@@ -47,7 +47,7 @@ node 'bcarnahan.puppetlabs.vm' {
   #    content => 'I learned that Puppet really is fun!',
   # }
     exec { "cowsay 'Welcome to ${::fqdn}.' > /etc/motd" :
-      path => '/usr/bin:/user/logca/bin',
+      path => '/usr/bin:/user/local/bin',
       creates => '/etc/motd',
     }
  }
