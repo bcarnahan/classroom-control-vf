@@ -37,12 +37,16 @@ ini_setting { 'random ordering':
 # definition. If there are no other nodes in this file, classes declared here
 # will be included in every node's catalog, *in addition* to any classes
 # specified in the console for that node.
-
-file { '/etc/motd':
-  ensure  => file,
-  owner   => 'trout',
-  content => 'I learned that Puppet really is fun!',
-}
+node 'bcarnahan.puppetlabs.vm' {
+  
+  notify { "This is ${::fqdn}. I am bcarnahan_production environment." :}
+    
+    file { '/etc/motd':
+      ensure  => file,
+      owner   => 'trout',
+      content => 'I learned that Puppet really is fun!',
+   }
+ }
 
 node default {
   # This is where you can declare classes for all nodes.
