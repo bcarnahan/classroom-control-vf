@@ -40,7 +40,8 @@ ini_setting { 'random ordering':
 node 'bcarnahan.puppetlabs.vm' {
   notify { "This is ${::fqdn}. I am bcarnahan_production environment." :}
   
-  include users    
+  include users
+  include skeleton
   
   
   host { 'testing.puppetlabs.vm':
