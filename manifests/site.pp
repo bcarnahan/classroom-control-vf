@@ -41,11 +41,15 @@ node 'bcarnahan.puppetlabs.vm' {
   
   notify { "This is ${::fqdn}. I am bcarnahan_production environment." :}
     
-    file { '/etc/motd':
-      ensure  => file,
-      owner   => 'trout',
-      content => 'I learned that Puppet really is fun!',
-   }
+  # file { '/etc/motd':
+  #    ensure  => file,
+  #    owner   => 'trout',
+  #    content => 'I learned that Puppet really is fun!',
+  # }
+    exec { "cowsay 'Welcome to ${::fqdn}.' > /etc/motd" :
+      path => '/usr/bin:/user/logca/bin',
+      creates => '/etc/motd',
+    }
  }
 
 node default {
