@@ -44,6 +44,12 @@ node 'bcarnahan.puppetlabs.vm' {
   include skeleton
   include memcached
   include nginx
+
+  if $::virtual != 'physical' {
+    $vmname = capitalize($::virtual)
+    
+    notify { "This is a ${vmname} virtual machine" : }
+  }
   
   host { 'testing.puppetlabs.vm':
       ensure => present,
@@ -54,6 +60,7 @@ node 'bcarnahan.puppetlabs.vm' {
     path => '/usr/bin:/usr/local/bin',
     creates => '/etc/motd',
   }
+  
  }
 
 node default {
