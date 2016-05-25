@@ -1,48 +1,33 @@
 class nginx {
+  
+  Yumrepo {
+   ensure              => 'present',
+   enabled             => '1',
+   gpgcheck            => '1',
+   gpgkey              => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7',
+   priority            => '99',
+   skip_if_unavailable => '1',
+   before     => [ Package['nginx'], Package['openssl-libs'] ],
+  }
+
   yumrepo { 'base':
-    ensure              => 'present',
     descr               => 'CentOS-$releasever - Base',
-    enabled             => '1',
-    gpgcheck            => '1',
-    gpgkey              => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7',
     mirrorlist          => 'http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os&infra=$infra',
-    priority            => '99',
-    skip_if_unavailable => '1',
-    before     => [ Package['nginx'], Package['openssl-libs'] ],
   }
   
   yumrepo { 'updates':
-    ensure              => 'present',
     descr               => 'CentOS-$releasever - Updates',
-    enabled             => '1',
-    gpgcheck            => '1',
-    gpgkey              => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7',
     mirrorlist          => 'http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra',
-    priority            => '99',
-    skip_if_unavailable => '1',
-    before     => [ Package['nginx'], Package['openssl-libs'] ],
   }
   
   yumrepo { 'extras':
-    ensure              => 'present',
     descr               => 'CentOS-$releasever - Extras',
-    enabled             => '1',
-    gpgcheck            => '1',
-    gpgkey              => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7',
     mirrorlist          => 'http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=extras&infra=$infra',
-    priority            => '99',
-    skip_if_unavailable => '1',
-    before     => [ Package['nginx'], Package['openssl-libs'] ],
   }
   
   yumrepo { 'centosplus':
-    ensure     => 'present',
     descr      => 'CentOS-$releasever - Plus',
-    enabled    => '1',
-    gpgcheck   => '1',
-    gpgkey     => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7',
     mirrorlist => 'http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=centosplus&infra=$infra',
-    before     => [ Package['nginx'], Package['openssl-libs'] ],
   }
 
   package { [ 'openssl', 'openssl-libs' ] :
@@ -85,7 +70,6 @@ class nginx {
      notify  => Service['nginx'],
   }
   
-
   file { '/etc/nginx/conf.d/default.conf':
      ensure  => file,
      source  => 'puppet:///modules/nginx/default.conf',
