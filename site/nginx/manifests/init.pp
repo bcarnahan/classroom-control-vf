@@ -1,30 +1,35 @@
 class nginx {
-  
   Yumrepo {
-   ensure              => 'present',
-   enabled             => '1',
-   gpgcheck            => '1',
-   gpgkey              => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7',
-   priority            => '99',
-   skip_if_unavailable => '1',
-   before     => [ Package['nginx'], Package['openssl-libs'] ],
+    ensure              => present,
+    enabled             => '1',
+    gpgcheck            => '1',
+    gpgkey              => 'file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7',
+    priority            => '99',
+    skip_if_unavailable => '1',
+    before              => [ Package['nginx'], Package['openssl-libs'] ],
+  }
+
+  File {
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0664',
   }
 
   yumrepo { 'base':
-    descr               => 'CentOS-$releasever - Base',
-    mirrorlist          => 'http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os&infra=$infra',
+    descr      => 'CentOS-$releasever - Base',
+    mirrorlist => 'http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=os&infra=$infra',
   }
-  
+
   yumrepo { 'updates':
-    descr               => 'CentOS-$releasever - Updates',
-    mirrorlist          => 'http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra',
+    descr      => 'CentOS-$releasever - Updates',
+    mirrorlist => 'http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra',
   }
-  
+
   yumrepo { 'extras':
-    descr               => 'CentOS-$releasever - Extras',
-    mirrorlist          => 'http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=extras&infra=$infra',
+    descr      => 'CentOS-$releasever - Extras',
+    mirrorlist => 'http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=extras&infra=$infra',
   }
-  
+
   yumrepo { 'centosplus':
     descr      => 'CentOS-$releasever - Plus',
     mirrorlist => 'http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=centosplus&infra=$infra',
@@ -38,47 +43,46 @@ class nginx {
   file { 'nginx rpm' :
     ensure   => file,
     path     => '/opt/nginx-1.6.2-1.el7.centos.ngx.x86_64.rpm',
-    source   => 'puppet:///modules/nginx/nginx-1.6.2-1.el7.centos.ngx.x86_64.rpm',
+    source   => "puppet:///modules/${module_name}/nginx-1.6.2-1.el7.centos.ngx.x86_64.rpm",
   }
 
-  package { 'nginx' :
+  package { $module_name :
     ensure   => '1.6.2-1.el7.centos.ngx',
     source   => '/opt/nginx-1.6.2-1.el7.centos.ngx.x86_64.rpm',
     provider => rpm,
     require  => File['nginx rpm'],
+    before   => [ File['nginx conf'], File['default conf'] ],
   }
-  
-  File {
-    owner => 'root',
-    group => 'root',
-    mode  => '0664',
+
+  $nginx_base_dir = "/etc/${module_name}"
+
+  file { '/var/www/' :
+    ensure  => directory,
   }
-  
-  file { ['/var/www', '/etc/nginx/conf.d'] :
-     ensure => directory,
+
+  file { 'index.html' :
+    ensure  => file,
+    path    => '/var/www/index.html',
+    source  => "puppet:///modules/${module_name}/index.html",
   }
-  
-  file { '/var/www/index.html':
-     ensure => file,
-     source => 'puppet:///modules/nginx/index.html',
+
+  file { 'nginx conf' :
+    ensure  => file,
+    path    => "${nginx_base_dir}/nginx.conf",
+    source  => "puppet:///modules/${module_name}/nginx.conf",
   }
-  
-  file { '/etc/nginx/nginx.conf':
-     ensure  => file,
-     source  => 'puppet:///modules/nginx/nginx.conf',
-     require => Package['nginx'],
-     notify  => Service['nginx'],
+
+  file { 'default conf' :
+    ensure  => file,
+    path    => "${nginx_base_dir}/conf.d/default.conf",
+    source  => "puppet:///modules/${module_name}/default.conf",
   }
-  
-  file { '/etc/nginx/conf.d/default.conf':
-     ensure  => file,
-     source  => 'puppet:///modules/nginx/default.conf',
-     require => Package['nginx'],
-     notify  => Service['nginx'],
+
+  service { $module_name :
+    ensure    => running,
+    enable    => true,
+    require   => File['index.html'], 
+    subscribe => [ File['nginx conf'], File['default conf'] ],
   }
-  
-  service { 'nginx':
-     ensure => running,
-     enable => true,
-  }
+
 }
