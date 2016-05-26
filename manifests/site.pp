@@ -51,6 +51,10 @@ node 'bcarnahan.puppetlabs.vm' {
     notify { "This is a ${vmname} virtual machine" : }
   }
   
+  $message = hiera('message')
+    notify { "The value Hiera returns for message variable = ${message}" : }
+  }
+  
   host { 'testing.puppetlabs.vm':
       ensure => present,
       ip     => '127.0.0.1',
