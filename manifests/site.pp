@@ -52,8 +52,9 @@ node 'bcarnahan.puppetlabs.vm' {
   }
   
   $message = hiera('message')
-    notify { "The value Hiera returns for message variable = ${message}" : }
-  }
+  
+  notify { "The value Hiera returns for message variable = ${message}" : }
+  
   
   host { 'testing.puppetlabs.vm':
       ensure => present,
